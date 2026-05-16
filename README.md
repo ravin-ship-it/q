@@ -37,6 +37,12 @@ q <query>        # Search and add
 q -p             # Play/Pause
 q -next          # Skip track
 q -list          # Interactive explorer
+q cookies chrome # Use Chrome cookies for YouTube (Fixes 429/Bot Detection)
 ```
 
-See `q -h` for full documentation.
+## 🍪 Cookie Support (YouTube Fix)
+
+If you encounter "Sign in to confirm you're not a bot" or "HTTP 429" errors on YouTube:
+1. Ensure you are logged into YouTube in your browser (e.g., Chrome, Firefox).
+2. Run `q cookies <browser_name>`.
+3. The script will automatically use your browser's cookies for both searching and playback.

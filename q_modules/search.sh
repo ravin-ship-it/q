@@ -15,7 +15,7 @@ perform_search() {
     
     # Use strict Tab delimiter for reliability
     local TAB=$'\t'
-    yt-dlp --default-search "$PLATFORM" --print "%(title)s${TAB}%(webpage_url)s${TAB}%(duration_string)s${TAB}%(uploader)s" --no-warnings --flat-playlist --skip-download -- "$QUERY" > "$TMP_RESULTS"
+    yt-dlp $YTDL_ARGS --default-search "$PLATFORM" --print "%(title)s${TAB}%(webpage_url)s${TAB}%(duration_string)s${TAB}%(uploader)s" --no-warnings --flat-playlist --skip-download -- "$QUERY" > "$TMP_RESULTS"
     
     if [ ! -s "$TMP_RESULTS" ]; then 
         echo -e "${C_PINK}🔍🤷 No results found for \"$QUERY\"... try another magic word?${C_RESET}"

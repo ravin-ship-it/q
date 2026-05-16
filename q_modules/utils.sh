@@ -11,7 +11,24 @@ rm -f "$HOME/.cache/mpv/radio_failed"
 rm -f "$HOME/.cache/mpv/radio_cooldown"
 
 SOCKET="$HOME/.mpv-socket"
+CONFIG_DIR="$HOME/.config/q"
+COOKIE_FILE="$CONFIG_DIR/cookies"
+mkdir -p "$CONFIG_DIR"
+
+# Load Cookie Settings
+YTDL_ARGS=""
+if [ -f "$COOKIE_FILE" ]; then
+    BROWSER=$(cat "$COOKIE_FILE")
+    if [ -n "$BROWSER" ]; then
+        YTDL_ARGS="--cookies-from-browser=$BROWSER"
+    fi
+fi
+
 MPV_CMD="mpv --idle --input-ipc-server=$SOCKET"
+if [ -n "$YTDL_ARGS" ]; then
+    MPV_CMD="$MPV_CMD --ytdl-raw-options=cookies-from-browser=$(cat "$COOKIE_FILE")"
+fi
+
 MPV_RUNNING=false
 if [ -S "$SOCKET" ]; then
     # Verify if socket is actually responsive (1s timeout)
@@ -190,7 +207,7 @@ get_cached_title() {
 fetch_title_bg() {
     local url="$1"
     (
-        local info=$(timeout 30s yt-dlp --print "%(title)s\t%(uploader)s\t%(duration_string)s" --no-warnings --skip-download -- "$url" 2>/dev/null | sed 's/\\t/\t/g')
+        local info=$(timeout 30s yt-dlp $YTDL_ARGS --print "%(title)s\t%(uploader)s\t%(duration_string)s" --no-warnings --skip-download -- "$url" 2>/dev/null | sed 's/\\t/\t/g')
         if [ -n "$info" ]; then
             # info is "title\tartist\tduration"
             printf "%s\t%s\n" "$url" "$info" >> "$CACHE_FILE"
@@ -246,7 +263,7 @@ fetch_missing_background() {
         if [ -z "$cached_row" ] || [ "$col_count" -lt 3 ]; then
              # Parallel Fetch with a bit of a limit
              (
-                 local info=$(timeout 30s yt-dlp --print "%(title)s\t%(uploader)s\t%(duration_string)s" --no-warnings --skip-download -- "$url" 2>/dev/null | sed 's/\\t/\t/g')
+                 local info=$(timeout 30s yt-dlp $YTDL_ARGS --print "%(title)s\t%(uploader)s\t%(duration_string)s" --no-warnings --skip-download -- "$url" 2>/dev/null | sed 's/\\t/\t/g')
                  if [ -n "$info" ]; then
                      { printf "%s\t%s\n" "$url" "$info"; } >> "$CACHE_FILE"
                  else

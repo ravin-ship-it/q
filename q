@@ -55,28 +55,42 @@ while [[ "$1" =~ ^- ]] || [[ "$1" =~ $SMART_CMDS ]]; do
     # Normalize Smart Commands to Flags
     CMD="$1"
     if [[ ! "$CMD" =~ ^- ]]; then
-        case "$CMD" in
-            play) CMD="-p" ;;
-            stop) CMD="-stop" ;;
-            next) CMD="-next" ;;
-            prev) CMD="-prev" ;;
-            vol) CMD="-v" ;;
-            info) CMD="-i" ;;
-            list) CMD="-pl-list" ;;
-            clear) CMD="-clr" ;;
-            shuffle) CMD="-shuf" ;;
-            remove) CMD="-rm" ;;
-            move) CMD="-mv" ;;
-            swap) CMD="-sw" ;;
-            help) CMD="-h" ;;
-            save) CMD="-pl-save" ;;
-            load) CMD="-pl-load" ;;
-            auto) CMD="-auto" ;;
-            fx) CMD="-fx" ;;
-        esac
+    case "$CMD" in
+        play) CMD="-p" ;;
+        stop) CMD="-stop" ;;
+        next) CMD="-next" ;;
+        prev) CMD="-prev" ;;
+        vol) CMD="-v" ;;
+        info) CMD="-i" ;;
+        list) CMD="-pl-list" ;;
+        clear) CMD="-clr" ;;
+        shuffle) CMD="-shuf" ;;
+        remove) CMD="-rm" ;;
+        move) CMD="-mv" ;;
+        swap) CMD="-sw" ;;
+        help) CMD="-h" ;;
+        save) CMD="-pl-save" ;;
+        load) CMD="-pl-load" ;;
+        auto) CMD="-auto" ;;
+        fx) CMD="-fx" ;;
+        cookies) CMD="-cookies" ;;
+    esac
     fi
 
     case "$CMD" in
+    -cookies)
+        shift
+        if [ -n "$1" ]; then
+            echo "$1" > "$COOKIE_FILE"
+            echo -e "${C_PINK}🍪 Cookies set to use browser: ${C_CYAN}$1${C_RESET}"
+            echo -e "${C_GRAY}   (Requires restart of MPV to apply to active player)${C_RESET}"
+        else
+            echo -e "${C_PINK}🍪 Current browser: ${C_CYAN}$(cat "$COOKIE_FILE" 2>/dev/null || echo "None")${C_RESET}"
+            echo -e "${C_GRAY}   Usage: q cookies <chrome|firefox|brave|edge|opera|safari>${C_RESET}"
+        fi
+        exit 0
+        ;;
+
         -rm) 
             shift
             declare -a targets
@@ -533,7 +547,7 @@ if [ "$IS_BATCH" = true ]; then
             echo -e "${C_CYAN}🔍 Analyzing URL:${C_RESET} $input"
             PL_TMP=$(mktemp)
             # Use strict 4-column format for analysis and caching
-            timeout 45s yt-dlp --flat-playlist --print "%(webpage_url)s\t%(title)s\t%(uploader)s\t%(duration_string)s" --no-warnings --skip-download -- "$input" > "$PL_TMP" 2>/dev/null
+            timeout 45s yt-dlp $YTDL_ARGS --flat-playlist --print "%(webpage_url)s\t%(title)s\t%(uploader)s\t%(duration_string)s" --no-warnings --skip-download -- "$input" > "$PL_TMP" 2>/dev/null
             
             # Debug: Store last raw output
             cp "$PL_TMP" "$HOME/.cache/mpv/last_yt_dlp_raw" 2>/dev/null

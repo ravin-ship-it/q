@@ -714,14 +714,14 @@ auto_queue_related() {
 
     if [ "$is_default_search" = false ] && [ -n "$seed_id" ]; then
         echo "[$(date +%T)] [Discovery] Mix for Seed ID: $seed_id" >> "$debug_log"
-        candidates=$(timeout 25s yt-dlp --print "$fields" --flat-playlist --no-warnings --skip-download --playlist-end 15 "https://www.youtube.com/watch?v=${seed_id}&list=RDAMVM${seed_id}" 2>/dev/null)
+        candidates=$(timeout 25s yt-dlp $YTDL_ARGS --print "$fields" --flat-playlist --no-warnings --skip-download --playlist-end 15 "https://www.youtube.com/watch?v=${seed_id}&list=RDAMVM${seed_id}" 2>/dev/null)
     fi
 
     if [ -z "$candidates" ]; then
         local query="popular music"
         [ "$is_default_search" = false ] && query="related to ${input_title:-music}"
         echo "[$(date +%T)] [Discovery] Search for: $query" >> "$debug_log"
-        candidates=$(timeout 25s yt-dlp --print "$fields" --no-warnings --skip-download --playlist-end 15 "ytmsearch15:${query}" 2>/dev/null)
+        candidates=$(timeout 25s yt-dlp $YTDL_ARGS --print "$fields" --no-warnings --skip-download --playlist-end 15 "ytmsearch15:${query}" 2>/dev/null)
     fi
     
     if [ -z "$candidates" ]; then

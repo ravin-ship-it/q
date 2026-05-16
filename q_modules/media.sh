@@ -30,7 +30,7 @@ fetch_and_display_url_info() {
     [ -n "$queue_idx" ] && [ "$queue_idx" != "null" ] && queue_status="Queued at #$queue_idx"
     
     # Fetch Metadata (Robustly)
-    local json_dump=$(yt-dlp --dump-json --no-warnings --skip-download --ignore-errors --flat-playlist -- "$clean_url" 2>/dev/null)
+    local json_dump=$(yt-dlp $YTDL_ARGS --dump-json --no-warnings --skip-download --ignore-errors --flat-playlist -- "$clean_url" 2>/dev/null)
     [ -z "$json_dump" ] && { echo -e "${C_PINK}🙈 Failed to fetch info... the internet might be playing hide and seek!${C_RESET}"; return; }
     
     # Check if we have multiple lines (Playlist) or single line
@@ -77,7 +77,7 @@ fetch_and_display_url_info() {
              echo -e "${C_GRAY}${B_LINE}${C_RESET}"
         else
             local title=$(echo "$json_dump" | jq -r '.title')
-        # Use existing title from MPV if available and yt-dlp title is generic
+        # Use existing title from MPV if available and yt-dlp $YTDL_ARGS title is generic
         [ -n "$force_title" ] && [ "$force_title" != "N/A" ] && title="$force_title"
         
         local artist=$(echo "$json_dump" | jq -r '.uploader // .artist // "N/A"')
@@ -140,27 +140,27 @@ fetch_and_display_url_info() {
             print_boxed_line "${C_PINK}📥 Download Options (Video + Audio)${C_RESET}"
             print_boxed_line "" true
             
-            # Essentials for yt-dlp commands
+            # Essentials for yt-dlp $YTDL_ARGS commands
             local dl_opts="--embed-metadata --embed-thumbnail"
 
             [ -n "$vid_ultra" ] && IFS='|' read -r id res fps <<< "$vid_ultra" && {
                 print_boxed_line "  ${C_YELLOW}[ULTRA] ${C_WHITE}${res} (${fps})${C_RESET}" true
-                print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+                print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
                 print_boxed_line "" true
             }
             [ -n "$vid_high" ]  && IFS='|' read -r id res fps <<< "$vid_high"  && {
                 print_boxed_line "  ${C_CYAN}[HIGH]  ${C_WHITE}${res} (${fps})${C_RESET}" true
-                print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+                print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
                 print_boxed_line "" true
             }
             [ -n "$vid_mid" ]   && IFS='|' read -r id res fps <<< "$vid_mid"   && {
                 print_boxed_line "  ${C_GREEN}[MID]   ${C_WHITE}${res} (${fps})${C_RESET}" true
-                print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+                print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
                 print_boxed_line "" true
             }
             [ -n "$vid_low" ]   && IFS='|' read -r id res fps <<< "$vid_low"   && {
                 print_boxed_line "  ${C_PURPLE}[LOW]   ${C_WHITE}${res} (${fps})${C_RESET}" true
-                print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+                print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -f ${id}+${best_audio_id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
                 print_boxed_line "" true
             }
         fi
@@ -177,30 +177,30 @@ fetch_and_display_url_info() {
             [[ "$ext" == "wav" ]] && current_dl_opts="--embed-metadata"
             
             print_boxed_line "  ${C_YELLOW}[LOSSLESS] ${C_WHITE}${ext^^} (${codec})${C_RESET}" true
-            print_boxed_line "  ${C_GRAY}yt-dlp ${current_dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+            print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${current_dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
             print_boxed_line "" true
         else
             print_boxed_line "  ${C_YELLOW}[LOSSLESS] ${C_WHITE}FLAC (Auto)${C_RESET}" true
-            print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -x --audio-format flac \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+            print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -x --audio-format flac \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
             print_boxed_line "" true
             print_boxed_line "  ${C_YELLOW}[LOSSLESS] ${C_WHITE}WAV  (Auto)${C_RESET}" true
-            print_boxed_line "  ${C_GRAY}yt-dlp --embed-metadata -x --audio-format wav \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+            print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS --embed-metadata -x --audio-format wav \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
             print_boxed_line "" true
         fi
 
         [ -n "$aud_high" ] && IFS='|' read -r id abr codec <<< "$aud_high" && {
             print_boxed_line "  ${C_CYAN}[HIGH]     ${C_WHITE}${abr} (${codec})${C_RESET}" true
-            print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+            print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
             print_boxed_line "" true
         }
         [ -n "$aud_mid" ]  && IFS='|' read -r id abr codec <<< "$aud_mid"  && {
             print_boxed_line "  ${C_GREEN}[MID]      ${C_WHITE}${abr} (${codec})${C_RESET}" true
-            print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+            print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
             print_boxed_line "" true
         }
         [ -n "$aud_low" ]  && IFS='|' read -r id abr codec <<< "$aud_low"  && {
             print_boxed_line "  ${C_PURPLE}[LOW]      ${C_WHITE}${abr} (${codec})${C_RESET}" true
-            print_boxed_line "  ${C_GRAY}yt-dlp ${dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
+            print_boxed_line "  ${C_GRAY}yt-dlp $YTDL_ARGS ${dl_opts} -f ${id} \"${C_VIOLET}${clean_url}${C_GRAY}\"${C_RESET}" true
             print_boxed_line "" true
         }
 
