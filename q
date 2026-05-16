@@ -2,7 +2,7 @@
 # Advanced Queue Manager (Synced Fetch Edition) - Finalized
 
 # --- MODULES ---
-MODULE_DIR="$HOME/.local/bin/mpv/q_modules"
+MODULE_DIR="$HOME/.local/share/q/q_modules"
 source "$MODULE_DIR/ui.sh"
 source "$MODULE_DIR/utils.sh"
 source "$MODULE_DIR/playlist.sh"
