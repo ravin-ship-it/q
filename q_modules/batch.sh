@@ -166,7 +166,7 @@ execute_batch() {
                     CACHE_MEM["$clean_url"]="${title}"$'\t'"${artist}"$'\t'"${dur}"
                 fi
             done
-            mpv --idle --input-ipc-server="$SOCKET" "${PLAYLIST_URLS[@]}" >/dev/null 2>&1 & disown
+            $MPV_CMD "${PLAYLIST_URLS[@]}" >/dev/null 2>&1 & disown
             
             # Update state for subsequent queries in this loop
             echo -e "${C_GRAY}⏳ Waiting for MPV socket...${C_RESET}"

@@ -11,6 +11,7 @@ rm -f "$HOME/.cache/mpv/radio_failed"
 rm -f "$HOME/.cache/mpv/radio_cooldown"
 
 SOCKET="$HOME/.mpv-socket"
+MPV_CMD="mpv --idle --input-ipc-server=$SOCKET"
 MPV_RUNNING=false
 if [ -S "$SOCKET" ]; then
     # Verify if socket is actually responsive (1s timeout)

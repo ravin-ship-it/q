@@ -531,8 +531,8 @@ cmd_stop() {
         echo '{ "command": ["quit"] }' | nc -U -w 1 "$SOCKET" > /dev/null 2>&1
     fi
     
-    # 2. Aggressive cleanup of any background mpv instances
-    pkill -u "$(whoami)" -f "mpv --idle" >/dev/null 2>&1
+    # 2. Aggressive cleanup of any background mpv instances started by Q
+    pkill -u "$(whoami)" -f "mpv --idle --input-ipc-server" >/dev/null 2>&1
     
     # 3. Kill any zombie 'q' monitors
     if [ -f "$HOME/.cache/mpv/idle_monitor.pid" ]; then
@@ -797,9 +797,8 @@ cmd_play() {
         fi
         
         echo -e "${C_PINK}🚀 Restoring last session...${C_RESET}"
-        # Use the reliable mpv wrapper function from .bashrc (android client compatible)
-        # Note: We don't remove the socket here manually as the wrapper does it on exit.
-        mpv --playlist="$LAST_PLAYLIST_FILE" >/dev/null 2>&1 &
+        # Use the reliable MPV_CMD defined in utils.sh
+        $MPV_CMD --playlist="$LAST_PLAYLIST_FILE" >/dev/null 2>&1 &
         disown
         
         # Wait for socket
